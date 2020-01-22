@@ -1,8 +1,8 @@
-import GANorama as GO
+import PanoramAI as PA
 import numpy as np
 import numpy.testing as npt
 import pytest
 
-def test_GANorama():
+def test_VAEorama():
     #Smoke test
-    V = GO.VAEorama()
+    V = PA.VAEorama()
