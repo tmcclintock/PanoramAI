@@ -3,24 +3,48 @@ import time
 import tensorflow as tf
 
 class VAEorama(object):
-    def __init__(self, M = 16, N = 128,
+    """Variational autoencoder (VAE) used to learn panoramic images.
+    Specifically, the VAE is convolutional (ConVAE), and is in
+    a `_CVAE` object attribute.
+
+    The `VAEorama` contains the routines for training the 
+    networks and for generating sample images.
+
+    Args:
+        M (int): pixel height of the input images
+        N (int): pixel width of the input images
+        latent_dimension (int): size of the latent space
+        n_samples_to_generate (int): number of samples
+            to automatically generate when doing random
+            sample generation
+        optimizer (`tf.keras.optimizers`): default is Adam(1e-4)
+        train_dataset (`numpy.ndarray`): input training image dataset
+        test_dataset (`numpy.ndarray`): input testing image dataset
+        BATCH_SIZE (int): batch size for training
+
+    """
+    def __init__(self, M = 8, N = 64,
                  latent_dimension = 200,
-                 optimizer = None,
                  n_samples_to_generate = 16,
+                 optimizer = None,
                  train_dataset = None,
-                 test_dataset = None):
+                 test_dataset = None,
+                 BATCH_SIZE = 64):
         assert M % 4 == 0
         assert N % 4 == 0
 
         self.M, self.N = M, N
         self.latent_dimension = latent_dimension
         self.optimizer = optimizer
+        
         self.create_CVAE(M, N, latent_dimension)
-        self.CVAE = _CVAE(M, N, latent_dimension)
+
         if not optimizer:
             self.reset_optimizer()
-        self.TOTAL_EPOCHS = 0
 
+        self.TOTAL_EPOCHS = 0
+        self.BATCH_SIZE = BATCH_SIZE
+        
         if train_dataset is not None:
             self.set_train_dataset(train_dataset)
         if test_dataset is not None:
@@ -32,14 +56,16 @@ class VAEorama(object):
         assert self.M == len(train_dataset[0])
         assert self.N == len(train_dataset[0][0])
         assert 3 == len(train_dataset[0][0][0])
-        self.train_dataset = train_dataset
+        self.train_dataset = tf.data.Dataset.from_tensor_slices(
+            train_dataset).batch(self.BATCH_SIZE)#.repeat(None)
         return
 
     def set_test_dataset(self, test_dataset):
         assert self.M == len(test_dataset[0])
         assert self.N == len(test_dataset[0][0])
         assert 3 == len(test_dataset[0][0][0])
-        self.test_dataset = test_dataset
+        self.test_dataset = tf.data.Dataset.from_tensor_slices(
+            test_dataset).batch(self.BATCH_SIZE)
         return
 
     def _generate_random_vector(self, n_samples):
@@ -87,28 +113,40 @@ class VAEorama(object):
             self.optimizer.apply_gradients(
                 zip(gradients, self.CVAE.trainable_variables))
 
-    def train(self, epochs, steps_for_update = None):
+    def train(self, epochs, steps_for_update = None, quiet = False):
+        """Train the networks in the convolutional VAE.
+
+        Args:
+            epochs (int): number of epochs
+            steps_for_update (int): number of epochs to
+                compute before giving a status update
+            quiet (bool): whether to give status updates
+
+        """
         if not steps_for_update:
-            steps_for_update == epochs // 10
-        update_length = epochs//10
+            steps_for_update = epochs // 10
 
         start_time = time.time()
         for epoch in range(1, epochs + 1):
-            for train_x in [self.train_dataset]:
+            for train_x in self.train_dataset:
                 self.compute_apply_gradients(train_x)
-    
-            if epoch % update_length == 0:
+
+            if epoch % steps_for_update == 0:
                 end_time = time.time()
                 loss = tf.keras.metrics.Mean()
                 for test_x in self.test_dataset:
-                    loss(self.compute_loss(tf.expand_dims(test_x, 0)))
+                    loss(self.compute_loss(test_x))
                 elbo = -loss.result()
-        
-                print(f'Epoch: {epoch}, Test set ELBO: {elbo:.4f}, '
-                      f'time elapsed for current epoch batch {end_time - start_time:.4f}')
+
+                if not quiet:
+                    print(f'Epoch: {epoch}, Test set ELBO: {elbo:.4f}, '
+                          f'time elapsed for current epoch batch {end_time - start_time:.4f}')
                 start_time = time.time()
+            if epoch == epochs:
+                break
         self.TOTAL_EPOCHS += epochs
-        print(f"Total epochs: {self.TOTAL_EPOCHS}")
+        if not quiet:
+            print(f"Total epochs: {self.TOTAL_EPOCHS}")
         return
 
 class _CVAE(tf.keras.Model):
