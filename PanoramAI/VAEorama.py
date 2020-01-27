@@ -149,6 +149,34 @@ class VAEorama(object):
             print(f"Total epochs: {self.TOTAL_EPOCHS}")
         return
 
+    def save_model_weights(self, path = "/tmp/weights/"):
+        """Save the VAE network weights.
+
+        Args:
+            path (string): to directory where the network 
+            weights are saved
+
+        """
+        self.CVAE.inference_net.save_weights(
+            path + "inference_net_weights", save_format = 'tf')
+        self.CVAE.generative_net.save_weights(
+            path + "generatives_net_weights", save_format = 'tf')
+        return
+
+    def load_model_weights(self, path = "/tmp/weights/"):
+        """Load the VAE network weights.
+
+        Args:
+            path (string): to directory where the network 
+            weights are saved
+
+        """
+        self.CVAE.inference_net.load_weights(
+            path + "inference_net_weights", save_format = 'tf')
+        self.CVAE.generative_net.load_weights(
+            path + "generatives_net_weights", save_format = 'tf')
+        return
+        
 class _CVAE(tf.keras.Model):
     """A convolutional variational autoencoder used to
     create panoramic images.
