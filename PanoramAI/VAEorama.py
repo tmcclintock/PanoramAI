@@ -44,6 +44,8 @@ class VAEorama(object):
 
         self.TOTAL_EPOCHS = 0
         self.BATCH_SIZE = BATCH_SIZE
+        self.TESTING_LOSS = []
+        self.RECORDED_EPOCHS = []
         
         if train_dataset is not None:
             self.set_train_dataset(train_dataset)
@@ -137,6 +139,8 @@ class VAEorama(object):
                 for test_x in self.test_dataset:
                     loss(self.compute_loss(test_x))
                 elbo = -loss.result()
+                self.TESTING_LOSS.append(elbo)
+                self.RECORDED_EPOCHS.append(epoch)
 
                 if not quiet:
                     print(f'Epoch: {epoch}, Test set ELBO: {elbo:.4f}, '
@@ -147,6 +151,11 @@ class VAEorama(object):
         self.TOTAL_EPOCHS += epochs
         if not quiet:
             print(f"Total epochs: {self.TOTAL_EPOCHS}")
+        return
+
+    def save_losses(self, path = "./"):
+        output = np.array([self.RECORDED_EPOCHS, self.TESTING_LOSS]).T
+        np.save(path + "epochs_testloss")
         return
 
     def save_model_weights(self, path = "/tmp/weights/"):
