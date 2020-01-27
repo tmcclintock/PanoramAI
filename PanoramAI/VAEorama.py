@@ -172,9 +172,9 @@ class VAEorama(object):
 
         """
         self.CVAE.inference_net.load_weights(
-            path + "inference_net_weights", save_format = 'tf')
+            path + "inference_net_weights")
         self.CVAE.generative_net.load_weights(
-            path + "generatives_net_weights", save_format = 'tf')
+            path + "generatives_net_weights")
         return
         
 class _CVAE(tf.keras.Model):
