@@ -155,7 +155,7 @@ class VAEorama(object):
 
     def save_losses(self, path = "./"):
         output = np.array([self.RECORDED_EPOCHS, self.TESTING_LOSS]).T
-        np.save(path + "epochs_testloss")
+        np.save(path + "epochs_testloss", output)
         return
 
     def save_model_weights(self, path = "/tmp/weights/"):
