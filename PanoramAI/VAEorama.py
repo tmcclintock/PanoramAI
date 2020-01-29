@@ -16,17 +16,7 @@ class VAEorama(GENERICorama):
     networks and for generating sample images.
 
     Args:
-        M (int): pixel height of the input images
-        N (int): pixel width of the input images
-        latent_dim (int): size of the latent space
-        n_samples_to_generate (int): number of samples
-            to automatically generate when doing random
-            sample generation
-        optimizer (`tf.keras.optimizers`): default is Adam(1e-4)
-        train_dataset (`numpy.ndarray`): input training image dataset
-        test_dataset (`numpy.ndarray`): input testing image dataset
-        BATCH_SIZE (int): batch size for training
-
+    TODO
     """
     def __init__(self, dataset,
                  BATCH_SIZE = 64, test_size = 0.25,
@@ -35,15 +25,13 @@ class VAEorama(GENERICorama):
 
     def _generate_random_vector(self, n_samples):
         self.n_samples_to_generate = n_samples
-        self.random_vector_for_generation = tf.random.normal(
+        return tf.random.normal(
             shape=[n_samples, self.latent_dim])
-        return
 
     def generate_samples(self, n_samples):
-        if n_samples > self.n_samples_to_generate:
-            print("Regenerating sample vector.")
-            self._generate_random_vector(n_samples)
-        return self.model.sample(self.random_vector_for_generation)
+        #if n_samples > self.n_samples_to_generate:
+        #    print("Regenerating sample vector.")
+        return self.model.sample(self._generate_random_vector(n_samples))
 
     def create_model(self):
         M, N = self.dimensions
