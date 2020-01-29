@@ -1,3 +1,6 @@
+# files created during pytests
+training_checkpoints/*
+
 # numpy files
 *.npy
 
