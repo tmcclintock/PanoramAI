@@ -28,9 +28,7 @@ def test_training():
     BS = 25
     data = np.random.randn(128, M, N, 3)
     G = PA.GANorama(data, latent_dim = LD, BATCH_SIZE = BS)
-    
-    with npt.assert_raises(Exception):
-        G.train(1)
+    G.train(1)
         
 def test_sample():
     M, N = 16, 128
