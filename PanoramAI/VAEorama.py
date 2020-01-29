@@ -1,11 +1,12 @@
+from .generic import GENERICorama
+
 import numpy as np
 import time
 
 import tensorflow as tf
-from tensorflow.keras.callbacks import EarlyStopping
 from tensorflow.keras.models import Model, Sequential
 
-class VAEorama(object):
+class VAEorama(GENERICorama):
     """Variational autoencoder (VAE) used to learn panoramic images.
     Specifically, the VAE is convolutional (ConVAE), and is in
     a `_CVAE` object attribute.
@@ -26,52 +27,10 @@ class VAEorama(object):
         BATCH_SIZE (int): batch size for training
 
     """
-    def __init__(self, train_dataset, M = 8, N = 64,
-                 latent_dim = 200,
-                 n_samples_to_generate = 16,
-                 optimizer = None,
-                 test_dataset = None,
-                 BATCH_SIZE = 64):
-        assert M % 4 == 0
-        assert N % 4 == 0
-
-        self.M, self.N = M, N
-        self.latent_dim = latent_dim
-        self.optimizer = optimizer
-
-        if not optimizer:
-            self.reset_optimizer()
-
-        self.create_CVAE(M, N, latent_dim)
-
-        self.TOTAL_EPOCHS = 0
-        self.BATCH_SIZE = BATCH_SIZE
-        self.TESTING_LOSS = []
-        self.RECORDED_EPOCHS = []
-        
-        self.set_train_dataset(train_dataset)
-        if test_dataset is not None:
-            self.set_test_dataset(test_dataset)
-        else:
-            self.test_dataset = None
-            
-        self._generate_random_vector(n_samples_to_generate)
-
-    def set_train_dataset(self, train_dataset):
-        assert self.M == len(train_dataset[0])
-        assert self.N == len(train_dataset[0][0])
-        assert 3 == len(train_dataset[0][0][0])
-        self.train_dataset = tf.data.Dataset.from_tensor_slices(
-            train_dataset).batch(self.BATCH_SIZE)#.repeat(None)
-        return
-
-    def set_test_dataset(self, test_dataset):
-        assert self.M == len(test_dataset[0])
-        assert self.N == len(test_dataset[0][0])
-        assert 3 == len(test_dataset[0][0][0])
-        self.test_dataset = tf.data.Dataset.from_tensor_slices(
-            test_dataset).batch(self.BATCH_SIZE)
-        return
+    def __init__(self, dataset,
+                 BATCH_SIZE = 64, test_size = 0.25,
+                 latent_dim = 100):
+        super().__init__(dataset, BATCH_SIZE, test_size, latent_dim)
 
     def _generate_random_vector(self, n_samples):
         self.n_samples_to_generate = n_samples
@@ -83,14 +42,11 @@ class VAEorama(object):
         if n_samples > self.n_samples_to_generate:
             print("Regenerating sample vector.")
             self._generate_random_vector(n_samples)
-        return self.CVAE.sample(self.random_vector_for_generation)
+        return self.model.sample(self.random_vector_for_generation)
 
-    def reset_optimizer(self, opt = tf.keras.optimizers.Adam):
-        self.optimizer = opt(1e-4)
-        return
-
-    def create_CVAE(self, M, N, latent_dim):
-        self.CVAE = _CVAE(M, N, latent_dim)
+    def create_model(self):
+        M, N = self.dimensions
+        self.model = _CVAE(M, N, self.latent_dim)
         return
 
     def log_normal_pdf(self, sample, mean, logvar, raxis=1):
@@ -101,9 +57,9 @@ class VAEorama(object):
 
     @tf.function
     def compute_loss(self, x):
-        mean, logvar = self.CVAE.encode(x)
-        z = self.CVAE.reparameterize(mean, logvar)
-        x_predicted = self.CVAE.decode(z)
+        mean, logvar = self.model.encode(x)
+        z = self.model.reparameterize(mean, logvar)
+        x_predicted = self.model.decode(z)
         MSE = tf.losses.MSE(x, x_predicted)
         logpx_z = -tf.reduce_sum(MSE)
         logpz = self.log_normal_pdf(z, 0., 0.)
@@ -114,9 +70,9 @@ class VAEorama(object):
     def compute_apply_gradients(self, x):
         with tf.GradientTape() as tape:
             loss = self.compute_loss(x)
-            gradients = tape.gradient(loss, self.CVAE.trainable_variables)
+            gradients = tape.gradient(loss, self.model.trainable_variables)
             self.optimizer.apply_gradients(
-                zip(gradients, self.CVAE.trainable_variables))
+                zip(gradients, self.model.trainable_variables))
 
     def train(self, epochs, steps_for_update = None, quiet = False):
         """Train the networks in the convolutional VAE.
@@ -143,8 +99,6 @@ class VAEorama(object):
                     for test_x in self.test_dataset:
                         loss(self.compute_loss(test_x))
                 elbo = -loss.result()
-                self.TESTING_LOSS.append(elbo)
-                self.RECORDED_EPOCHS.append(epoch)
 
                 if not quiet:
                     print(f'Epoch: {epoch}, Test set ELBO: {elbo:.4f}, '
@@ -152,14 +106,6 @@ class VAEorama(object):
                 start_time = time.time()
             if epoch == epochs:
                 break
-        self.TOTAL_EPOCHS += epochs
-        if not quiet:
-            print(f"Total epochs: {self.TOTAL_EPOCHS}")
-        return
-
-    def save_losses(self, path = "./"):
-        output = np.array([self.RECORDED_EPOCHS, self.TESTING_LOSS]).T
-        np.save(path + "epochs_testloss", output)
         return
 
     def save_model_weights(self, path = "/tmp/weights/"):
@@ -170,9 +116,9 @@ class VAEorama(object):
             weights are saved
 
         """
-        self.CVAE.inference_net.save_weights(
+        self.model.inference_net.save_weights(
             path + "inference_net_weights", save_format = 'tf')
-        self.CVAE.generative_net.save_weights(
+        self.model.generative_net.save_weights(
             path + "generatives_net_weights", save_format = 'tf')
         return
 
@@ -184,9 +130,9 @@ class VAEorama(object):
             weights are saved
 
         """
-        self.CVAE.inference_net.load_weights(
+        self.model.inference_net.load_weights(
             path + "inference_net_weights")
-        self.CVAE.generative_net.load_weights(
+        self.model.generative_net.load_weights(
             path + "generatives_net_weights")
         return
 
