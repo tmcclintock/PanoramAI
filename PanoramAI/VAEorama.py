@@ -4,6 +4,7 @@ import numpy as np
 import time
 
 import tensorflow as tf
+import tensorflow.keras.layers as tfkl
 from tensorflow.keras.models import Model, Sequential
 
 class VAEorama(GENERICorama):
@@ -148,30 +149,31 @@ class _CVAE(tf.keras.Model):
         self.input_dims = [M, N]
         self.latent_dim = latent_dim
         self.inference_net = tf.keras.Sequential([
-            tf.keras.layers.InputLayer(input_shape=(M, N, 3)), #(bs, M, N, 3)
-            tf.keras.layers.Conv2D(
-                filters=32, kernel_size=3, strides=(2, 2),
-                activation='relu', padding="valid"), #(bs, M/2, N/2, 32)
-            tf.keras.layers.Conv2D(
-                filters=64, kernel_size=3, strides=(2, 2), #(bs, M/4, N/4, 64)
+            tfkl.InputLayer(input_shape=(M, N, 3)),
+            tfkl.Conv2D(
+                filters=64, kernel_size=3, strides=(2, 2),
                 activation='relu', padding="valid"),
-            tf.keras.layers.Flatten(), #(bs, (M/4) * (N/4) * 64)
+            tfkl.Conv2D(
+                filters=64, kernel_size=3, strides=(2, 2),
+                activation='relu', padding="valid"),
+            tfkl.Flatten(),
             #predicting mean and logvar
-            tf.keras.layers.Dense(latent_dim + latent_dim), # (bs, D * D)
+            tfkl.Dense(latent_dim + latent_dim),
+            tfkl.Dense(latent_dim + latent_dim),
         ])
         self.generative_net = tf.keras.Sequential([
-            tf.keras.layers.InputLayer(input_shape=(latent_dim,)), #(bs, D)
-            tf.keras.layers.Dense(units= M * N * 4, activation=tf.nn.relu), #M * N * 4 = (M/4)*(N/4)*64
-            tf.keras.layers.Reshape(target_shape=(M//4, N//4, 64)),
-            tf.keras.layers.Conv2DTranspose(
+            tfkl.InputLayer(input_shape=(latent_dim,)),
+            tfkl.Dense(units= M * N * 4, activation=tf.nn.relu),
+            tfkl.Reshape(target_shape=(M//4, N//4, 64)),
+            tfkl.Conv2DTranspose(
                 filters=64, kernel_size=3, strides=(2, 2),
-                padding="SAME", activation='relu'), #(bs, M/2, N/2, 64)
-            tf.keras.layers.Conv2DTranspose(
+                padding="SAME", activation='relu'),
+            tfkl.Conv2DTranspose(
                 filters=32, kernel_size=3, strides=(2, 2),
-                padding="SAME", activation='relu'), #(bs, M, N, 32)
-            tf.keras.layers.Conv2DTranspose(
+                padding="SAME", activation='relu'),
+            tfkl.Conv2DTranspose(
                 filters=3, kernel_size=3, strides=(1, 1), padding="SAME",
-                activation='sigmoid'), #(bs, M, N, 3)
+                activation='sigmoid'),
         ])
         
     @tf.function
