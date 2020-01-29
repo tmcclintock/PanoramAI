@@ -84,10 +84,10 @@ class GANorama(GENERICorama):
             if epoch % steps_for_update == 0:
                 if make_checkpoints:
                     checkpoint.save(file_prefix = checkpoint_prefix)
-            print(f"Time for epoch {epoch} "
-                  f" is {time.time() - start:.4f} sec -- "
-                  f"Gen loss: {gen_loss:.4f}   Disc loss: {disc_loss:.4f} per batch")
-            #.format(epoch + 1, time.time()-start))
+                print(f"Time for epoch {epoch} "
+                      f" is {time.time() - start:.4f} sec -- "
+                      f"Gen loss: {gen_loss:.4f}   Disc loss: {disc_loss:.4f} per batch")
+                #.format(epoch + 1, time.time()-start))
         return
 
     def create_model(self):
