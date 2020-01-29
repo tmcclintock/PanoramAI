@@ -74,7 +74,7 @@ class VAEorama(GENERICorama):
 
         """
         if not steps_for_update:
-            steps_for_update = epochs // 10
+            steps_for_update = max(1, epochs // 10)
 
         start_time = time.time()
         for epoch in range(1, epochs + 1):

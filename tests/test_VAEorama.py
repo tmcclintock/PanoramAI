@@ -24,7 +24,7 @@ def test_training():
     BS = 25
     data = np.random.randn(128, M, N, 3)
     V = PA.VAEorama(data, latent_dim = LD, BATCH_SIZE = BS)
-    V.train(10)
+    V.train(1)
 
 def test_sample():
     M, N = 16, 128
