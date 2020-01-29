@@ -28,7 +28,7 @@ def test_training():
     BS = 25
     data = np.random.randn(128, M, N, 3)
     G = PA.GANorama(data, latent_dim = LD, BATCH_SIZE = BS)
-    G.train(1)
+    G.train(2)
         
 def test_sample():
     M, N = 16, 128
@@ -44,5 +44,5 @@ def test_sample():
 if __name__ == "__main__":
     #test_GANorama()
     #test_attributes()
-    #test_training()
+    test_training()
     test_sample()
