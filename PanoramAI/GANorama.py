@@ -61,7 +61,7 @@ class GANorama(GENERICorama):
             zip(gradients_of_generator, self.generator.trainable_variables))
         self.discriminator_optimizer.apply_gradients(
             zip(gradients_of_discriminator, self.discriminator.trainable_variables))
-        return
+        return gen_loss, disc_loss
 
     def train(self, epochs, steps_for_update = None, make_checkpoints = False):
         if not steps_for_update:
@@ -78,13 +78,16 @@ class GANorama(GENERICorama):
         for epoch in range(1, epochs+1):
             start = time.time()
             for train_x in self.train_dataset:
-                self._train_step(train_x)
+                gen_loss, disc_loss = self._train_step(train_x)
 
             # Save the model every 15 epochs
             if epoch % steps_for_update == 0:
                 if make_checkpoints:
                     checkpoint.save(file_prefix = checkpoint_prefix)
-            print ('Time for epoch {} is {} sec'.format(epoch + 1, time.time()-start))
+            print(f"Time for epoch {epoch+1} "
+                  f" is {time.time() - start:.4f} sec -- "
+                  f"Gen loss: {gen_loss:.4f}   Disc loss: {disc_loss:.4f} per batch")
+            #.format(epoch + 1, time.time()-start))
         return
 
     def create_model(self):
