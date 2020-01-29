@@ -13,6 +13,17 @@ python setup.py install
 
 Much of the training data for this project was generated using the synthetic panoramic image tool called the [LandscapeGenerator](https://github.com/tmcclintock/LandscapeGenerator), which is not currently `pip` installable.
 
+The requirements are:
+
+* [`numpy` and `scipy`](https://scipy.org/install.html)
+* [`scikit-learn`](https://scikit-learn.org/stable/install.html)
+* [`tensorflow`](https://www.tensorflow.org/install) >= version 2.0.0
+* [`notebook`](https://jupyter.readthedocs.io/en/latest/install.html) (for running the example notebooks)
+* [`matplotlib`](https://matplotlib.org/users/installing.html) (for notebooks)
+* [`pytest`](https://docs.pytest.org/en/latest/getting-started.html) (for testing)
+
+These can all be installed together using the `requirements.txt` file as shown above (assuming you have `pip`).
+
 ## Usage
 
 This section is still being finalized.
