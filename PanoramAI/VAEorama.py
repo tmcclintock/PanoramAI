@@ -155,13 +155,13 @@ class _CVAE(tf.keras.Model):
             tfkl.Reshape(target_shape=(M//4, N//4, 64)),
             tfkl.Conv2DTranspose(
                 filters=64, kernel_size=3, strides=(2, 2),
-                padding="SAME", activation='relu'),
+                padding="same", activation='relu'),
             tfkl.Conv2DTranspose(
                 filters=32, kernel_size=3, strides=(2, 2),
-                padding="SAME", activation='relu'),
+                padding="same", activation='relu'),
             tfkl.Conv2DTranspose(
-                filters=3, kernel_size=3, strides=(1, 1), padding="SAME",
-                activation='sigmoid'),
+                filters=3, kernel_size=3, strides=(1, 1),
+                padding="same", activation='sigmoid'),
         ])
         
     @tf.function
