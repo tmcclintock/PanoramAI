@@ -1,4 +1,4 @@
-# PanoramAI [![Build Status](https://travis-ci.com/tmcclintock/PanoramAI.svg?branch=master)](https://travis-ci.com/tmcclintock/PanoramAI)
+# PanoramAI [![Build Status](https://travis-ci.com/tmcclintock/PanoramAI.svg?branch=master)](https://travis-ci.com/tmcclintock/PanoramAI) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 Panoramic images using generative networks, and (in the future) panoramic images conditional on smaller field-of-view images.
 
