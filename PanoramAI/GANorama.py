@@ -76,9 +76,12 @@ class GANorama(GENERICorama):
             discriminator=self.discriminator)
         
         for epoch in range(1, epochs+1):
+            gen_loss, disc_loss = 0, 0
             start = time.time()
             for train_x in self.train_dataset:
-                gen_loss, disc_loss = self._train_step(train_x)
+                gl, dl = self._train_step(train_x)
+                gen_loss += gl
+                disc_loss += dl
 
             # Save the model every 15 epochs
             if epoch % steps_for_update == 0:
@@ -86,7 +89,7 @@ class GANorama(GENERICorama):
                     checkpoint.save(file_prefix = checkpoint_prefix)
                 print(f"Time for epoch {epoch} "
                       f" is {time.time() - start:.4f} sec -- "
-                      f"Gen loss: {gen_loss:.4f}   Disc loss: {disc_loss:.4f} per batch")
+                      f"Gen loss: {gen_loss:.4f}   Disc loss: {disc_loss:.4f}")
                 #.format(epoch + 1, time.time()-start))
         return
 

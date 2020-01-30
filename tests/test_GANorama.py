@@ -26,7 +26,7 @@ def test_training():
     M, N = 16, 128
     LD = 100
     BS = 25
-    data = np.random.randn(128, M, N, 3)
+    data = np.random.randn(1000, M, N, 3)
     G = PA.GANorama(data, latent_dim = LD, BATCH_SIZE = BS)
     G.train(2)
         
