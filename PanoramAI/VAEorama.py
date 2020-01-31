@@ -23,16 +23,11 @@ class VAEorama(GENERICorama):
                  latent_dim = 100):
         super().__init__(dataset, BATCH_SIZE, test_size, latent_dim)
 
-    def _generate_random_vector(self, n_samples):
-        self.n_samples_to_generate = n_samples
-        return tf.random.normal(
-            shape=[n_samples, self.latent_dim])
-
     def generate_samples(self, n_samples):
-        #if n_samples > self.n_samples_to_generate:
-        #    print("Regenerating sample vector.")
-        return self.model.sample(self._generate_random_vector(n_samples))
-
+        self.n_samples_to_generate = n_samples
+        return self.model.sample(
+            tf.random.normal(shape=[n_samples, self.latent_dim]))
+        
     def create_model(self):
         M, N = self.dimensions
         self.model = _CVAE(M, N, self.latent_dim)
