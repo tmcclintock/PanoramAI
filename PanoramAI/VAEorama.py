@@ -23,26 +23,15 @@ class VAEorama(GENERICorama):
                  latent_dim = 100):
         super().__init__(dataset, BATCH_SIZE, test_size, latent_dim)
 
-    def _generate_random_vector(self, n_samples):
-        self.n_samples_to_generate = n_samples
-        return tf.random.normal(
-            shape=[n_samples, self.latent_dim])
-
     def generate_samples(self, n_samples):
-        #if n_samples > self.n_samples_to_generate:
-        #    print("Regenerating sample vector.")
-        return self.model.sample(self._generate_random_vector(n_samples))
-
+        self.n_samples_to_generate = n_samples
+        return self.model.sample(
+            tf.random.normal(shape=[n_samples, self.latent_dim]))
+        
     def create_model(self):
         M, N = self.dimensions
         self.model = _CVAE(M, N, self.latent_dim)
         return
-
-    def log_normal_pdf(self, sample, mean, logvar, raxis=1):
-        log2pi = tf.math.log(2. * np.pi)
-        return tf.reduce_sum(
-            -.5 * ((sample - mean) ** 2. * tf.exp(-logvar) + logvar + log2pi),
-            axis=raxis)
 
     @tf.function
     def compute_loss(self, x):
@@ -51,8 +40,17 @@ class VAEorama(GENERICorama):
         x_predicted = self.model.decode(z)
         MSE = tf.losses.MSE(x, x_predicted)
         logpx_z = -tf.reduce_sum(MSE)
-        logpz = self.log_normal_pdf(z, 0., 0.)
-        logqz_x = self.log_normal_pdf(z, mean, logvar)
+        #Log-normal distributions for z
+        #The prior has mean 0 with no variance
+        #The variational distribution has a mean and logvar
+        log2pi = tf.math.log(2. * np.pi)
+        logpz = tf.reduce_sum(
+            -0.5 * (z ** 2. + log2pi), axis=1)
+        logqz_x = tf.reduce_sum(
+            -.5 * ((z - mean) ** 2. * tf.exp(-logvar) + logvar + log2pi),
+            axis=1)
+        #logpz = self.log_normal_pdf(z, 0., 0.)
+        #logqz_x = self.log_normal_pdf(z, mean, logvar)
         return -tf.reduce_mean(logpx_z + logpz - logqz_x)
 
     @tf.function
