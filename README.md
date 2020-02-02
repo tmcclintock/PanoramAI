@@ -26,4 +26,14 @@ These can all be installed together using the `requirements.txt` file as shown a
 
 ## Usage
 
-This section is still being finalized.
+PanoramAI contains models to generate panoramic images. At present, this includes two fully generative models, and a conditional model based on input images is in development. Models provided in this package are, at the moment, untrained. This section documents how to instantiate and train a model, and then how to generate new panoramic images.
+
+First, import and create a model. As an example here, we consider a convolutional variational autoencoder (`VAEorama`).
+
+```python
+import PanoramAI
+
+...
+
+model = PanoramAI.VAEorama(dataset)
+```
