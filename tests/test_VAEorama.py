@@ -36,6 +36,40 @@ def test_sample():
     examples = V.generate_samples(1)[0]
     assert examples.shape == (M, N, 3)
 
+def test_encode_decode():
+    #Test shapes of the encode->decode process
+    M, N = 16, 128
+    LD = 100
+    BS = 25
+    data = np.random.randn(128, M, N, 3)
+    V = PA.VAEorama(data, latent_dim = LD, BATCH_SIZE = BS)
+
+    for x in V.train_dataset:
+        mean, logvar = V.model.encode(x)
+        npt.assert_equal(
+            mean.get_shape().as_list(), (V.BATCH_SIZE, V.latent_dim,))
+        npt.assert_equal(
+            logvar.get_shape().as_list(), (V.BATCH_SIZE, V.latent_dim,))
+        z = V.model.reparameterize(mean, logvar)
+        npt.assert_equal(z.shape, mean.shape)
+
+        xprime = V.model.decode(z)
+        npt.assert_equal(x.shape, xprime.shape)
+        break
+
+def test_save_and_load():
+    import os
+    M, N = 16, 128
+    LD = 100
+    BS = 25
+    data = np.random.randn(128, M, N, 3)
+    V = PA.VAEorama(data, latent_dim = LD, BATCH_SIZE = BS)
+    V.save_model_weights("temp/")
+    V.load_model_weights("temp/")
+    res = os.system("rm -rf temp")
+    npt.assert_equal(res, 0)
+    
+
 if __name__ == "__main__":
     #test_VAEorama_smoketest()
     #test_attributes()
