@@ -85,7 +85,7 @@ class GANorama(GENERICorama):
 
             # Save the model every 15 epochs
             if epoch % steps_for_update == 0:
-                if make_checkpoints:
+                if make_checkpoints: # pragma: no cover
                     checkpoint.save(file_prefix = checkpoint_prefix)
                 print(f"Time for epoch {epoch} "
                       f" is {time.time() - start:.4f} sec -- "
