@@ -28,7 +28,15 @@ def test_training():
     BS = 25
     data = np.random.randn(1000, M, N, 3)
     G = PA.GANorama(data, latent_dim = LD, BATCH_SIZE = BS)
-    G.train(2)
+    G.train(1)
+
+    #Test the loss directly
+    for x in G.train_dataset:
+        DL = G.discriminator_loss(x, x)
+        GL = G.generator_loss(x)
+        npt.assert_equal(DL.dtype, np.float64)
+        npt.assert_equal(GL.dtype, np.float64)
+        break
         
 def test_sample():
     M, N = 16, 128
