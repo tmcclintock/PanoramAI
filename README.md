@@ -36,4 +36,4 @@ import PanoramAI
 model = PanoramAI.VAEorama(dataset)
 ```
 
-In this example, `dataset` is a `numpy.ndarray` containing the input panoramic images for training. It should have dimensions `N`, `Height`, `Width`, `3`, where the height and width are the dimenions of the $N$ input images.
+In this example, `dataset` is a `numpy.ndarray` containing the input panoramic images for training. It should have `N` RGB images in total, meaning its shape must be (`N`,`Height`,`Width`,`3`) where the height and width are in pixels.
