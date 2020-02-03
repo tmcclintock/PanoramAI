@@ -51,23 +51,26 @@ class GENERICorama(object):
         self.optimizer = opt(1e-4)
         return
 
-    def save_model(self, epoch, loss, recon, kl, save_path = "./models/"):
+    def save_model(self, epoch, loss, recon, kl, save_path = "./saved_models/"):
         """Write logs and save the model"""
-        train_summary_writer = tf.summary.create_file_writer(summary_path)
+        train_summary_writer = tf.summary.create_file_writer(save_path)
         with train_summary_writer.as_default():
             tf.summary.scalar("Total Loss", loss, step=epoch)
             tf.summary.scalar("KL Divergence", kl, step=epoch)
             tf.summary.scalar("Reconstruction Loss", recon, step=epoch)
 
         # save model
-        if loss < self.BEST_LOSS:
+        if loss < self.BEST_LOSS: # pragma: no cover
             self.BEST_LOSS = loss
-            self.model.save(save_path+"BEST_MODEL")
-        self.model.save(save_path)
+            if self.model is not None: 
+                self.model.save(save_path+"BEST_MODEL")
+        if self.model is not None: # pragma: no cover
+            self.model.save(save_path)
         
     def create_model(self):
         """Create the generative model.
 
         """
+        self.model = None
         pass
 
