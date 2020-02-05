@@ -36,7 +36,7 @@ import PanoramAI
 model = PanoramAI.VAEorama(dataset)
 ```
 
-In this example, `dataset` is a `numpy.ndarray` containing the input panoramic images for training. It should have `N` RGB images in total, meaning its shape must be (`N`,`Height`,`Width`,`3`) where the height and width are in pixels.
+In this example, `dataset` is a `numpy.ndarray` containing the input panoramic images for training. It should have `N` RGB images in total, meaning its shape must be (`N`,`Height`,`Width`,`3`) where the height and width are in pixels. Note that pixels are assumed to be normalized to the range `[0,1]`.
 
 Once created, we train the model for some number of epochs.
 ```python
@@ -44,10 +44,10 @@ epochs = 100
 model.train(epochs)
 ```
 
-Predictions can be made in batches
+Predictions can be made in batches.
 ```python
 #Create 10 sample panoramas
-samples - model.generate_samples(10)
+samples = model.generate_samples(10)
 ```
 
 ### Models

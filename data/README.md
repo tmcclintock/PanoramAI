@@ -1,1 +1,0 @@
-This directory has data in it, but the data will not be uploaded to GitHub. To generate your own custom landscapes, check out the [LandscapeGenerator](https://github.com/tmcclintock/LandscapeGenerator).
