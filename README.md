@@ -56,8 +56,8 @@ At present, PanoramAI includes two fully generative models: a DCGAN and a convol
 
 Training images should be landscapes. Development of this project used synthetic landscape images made with the [LandscapeGenerator](https://github.com/tmcclintock/LandscapeGenerator) tool. Example training images are shown below:
 
-[example1]: https://github.com/tmcclintock/LandscapeGenerator/blob/master/notebooks/images/ex1.png "Example sunset with trees"
+[example1]: https://github.com/tmcclintock/PanoramAI/blob/master/images/ex1.png "Example sunset with trees"
 
-[example2]: https://github.com/tmcclintock/LandscapeGenerator/blob/master/notebooks/images/ex2.png "Example autumn day"
+[example2]: https://github.com/tmcclintock/PanoramAI/blob/master/images/ex2.png "Example autumn day"
 
-[example3]: https://github.com/tmcclintock/LandscapeGenerator/blob/master/notebooks/images/ex3.png "Another example sunset with trees"
+[example3]: https://github.com/tmcclintock/PanoramAI/blob/master/images/ex3.png "Another example sunset with trees"
