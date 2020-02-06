@@ -53,3 +53,11 @@ samples = model.generate_samples(10)
 ### Models
 
 At present, PanoramAI includes two fully generative models: a DCGAN and a convolutional variational autoencoder (VAE). A conditional VAE is in development.
+
+Training images should be landscapes. Development of this project used synthetic landscape images made with the [LandscapeGenerator](https://github.com/tmcclintock/LandscapeGenerator) tool. Example training images are shown below:
+
+[example1]: https://github.com/tmcclintock/LandscapeGenerator/blob/master/notebooks/images/ex1.png "Example sunset with trees"
+
+[example2]: https://github.com/tmcclintock/LandscapeGenerator/blob/master/notebooks/images/ex2.png "Example autumn day"
+
+[example3]: https://github.com/tmcclintock/LandscapeGenerator/blob/master/notebooks/images/ex3.png "Another example sunset with trees"
