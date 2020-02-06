@@ -60,10 +60,16 @@ Training images should be landscapes. Development of this project used synthetic
 
 ![alt text][example2]
 
-![alt text][example]
+![alt text][example3]
 
 [example1]: https://github.com/tmcclintock/PanoramAI/blob/master/images/ex1.png "Example sunset with trees"
 
 [example2]: https://github.com/tmcclintock/PanoramAI/blob/master/images/ex2.png "Example autumn day"
 
 [example3]: https://github.com/tmcclintock/PanoramAI/blob/master/images/ex3.png "Another example sunset with trees"
+
+Once trained, the model produces novel landscape images, like this one:
+
+![alt text][example4]
+
+[example4]: https://github.com/tmcclintock/PanoramAI/blob/master/images/ex4.png "Generated sunset with trees"
