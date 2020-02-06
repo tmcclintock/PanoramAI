@@ -73,3 +73,7 @@ Once trained, the model produces novel landscape images, like this one:
 ![alt text][example4]
 
 [example4]: https://github.com/tmcclintock/PanoramAI/blob/master/images/ex4.png "Generated sunset with trees"
+
+This landscape was created with a VAE (hence the blurriness) with not much training data, with a narrow field of view. Smaller fields of view have been able to successfully generate high resolution landscapes, but they are more difficult to render in VR.
+
+To see generated images in a VR environment check out [this link](https://tmcclintock.github.io/) (works best in mobile). This was created using [React 360](https://facebook.github.io/react-360/).
